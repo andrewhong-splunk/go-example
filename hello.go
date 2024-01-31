@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,11 +13,10 @@ import (
 
 	"context"
 	"github.com/signalfx/splunk-otel-go/distro"
-//	"github.com/signalfx/splunk-otel-go/instrumentation/net/http/splunkhttp"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 
-)
+	)
 
 
 type TokenResponse struct {
@@ -96,15 +94,8 @@ func processResponse(response io.Reader) string {
         return accessToken
 }
 
-func sendGetRequest(client *http.Client, apiUrl string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", apiUrl)
-	if err != nil {
-		return nil, err
-	}
 
-	
-
-func main() {
+func GetAPIkey() string {
 // otel instrumentation
 	sdk, err := distro.Run()
 	if err != nil {
@@ -138,8 +129,7 @@ client := &http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 // Read response body, get access token
 	accessToken := processResponse(resp.Body)
 
-// Make API call
-	
+	return accessToken
 }
 
 
