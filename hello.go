@@ -18,7 +18,7 @@ import (
 
 	)
 
-
+// Define the struct for the response body. Used to parse json response to extract access token
 type TokenResponse struct {
 	Type string `json:"type"`
 	Username string `json:"username"`
@@ -31,10 +31,12 @@ type TokenResponse struct {
 	Scope string `json:"scope"`
 }
 
+// Function used to get value from the .env file using key
 func goDotEnvVariable(key string) string {
 	return os.Getenv(key)
 }
 
+// Get clien_id and client_secret from the .env file 
 func clientVariables() (string, string) {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -51,6 +53,7 @@ func clientVariables() (string, string) {
 	return client_id, client_secret	
 }
 
+// Create request body. Sets client_id, client_secret, grant type and returns body
 func createRequestBody(client_id, client_secret string) io.Reader {
 	data := url.Values{}
 	data.Set("grant_type", "client_credentials")
@@ -61,6 +64,7 @@ func createRequestBody(client_id, client_secret string) io.Reader {
 	return encodedData
 }
 
+// Uses client, url, and body to make request. Returns http response and err
 func sendPostRequest(client *http.Client, apiUrl string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest("POST", apiUrl, body)
 	if err != nil {
@@ -77,6 +81,7 @@ func sendPostRequest(client *http.Client, apiUrl string, body io.Reader) (*http.
 	return resp, nil
 }
 
+// Convert http response to json using TokenResponse struct then extract access token value
 func processResponse(response io.Reader) string {
 	responseData, err := ioutil.ReadAll(response)
         if err != nil {
@@ -94,8 +99,9 @@ func processResponse(response io.Reader) string {
         return accessToken
 }
 
+// Use above functions to get API token. Returns access token as a key and client for further API calls
+func GetAPIkey() string, *http.client {
 
-func GetAPIkey() string {
 // otel instrumentation
 	sdk, err := distro.Run()
 	if err != nil {
@@ -129,7 +135,7 @@ client := &http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 // Read response body, get access token
 	accessToken := processResponse(resp.Body)
 
-	return accessToken
+	return accessToken, client
 }
 
 

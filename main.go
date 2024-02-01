@@ -1,10 +1,15 @@
 package main
 
 import (
-	"fmt"
+
 )
 
+func createRequest(client *http.Client, apiUrl string) {
+
+}
+
 func main() {
-	key := GetAPIkey()
-	fmt.Println(key)
+	key, client := GetAPIkey()
+	
+
 }
