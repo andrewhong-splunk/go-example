@@ -82,7 +82,7 @@ func sendPostRequest(client *http.Client, apiUrl string, body io.Reader) (*http.
 }
 
 // Convert http response to json using TokenResponse struct then extract access token value
-func processResponse(response io.Reader) string {
+func processTokenResponse(response io.Reader) string {
 	responseData, err := ioutil.ReadAll(response)
         if err != nil {
                 log.Fatal(err)
@@ -100,20 +100,21 @@ func processResponse(response io.Reader) string {
 }
 
 // Use above functions to get API token. Returns access token as a key and client for further API calls
-func GetAPIkey() string, *http.client {
+func GetAPIkey() (string, *http.Client) {
 
 // otel instrumentation
 	sdk, err := distro.Run()
 	if err != nil {
 		panic(err)
 	}
+
 // Flush all spans before the application exits
 	defer func() {
 	if err := sdk.Shutdown(context.Background()); err != nil {
 		panic(err)
 	}
 	}()
-
+	
 // Load env variables	
 	client_id, client_secret := clientVariables()
 
@@ -125,7 +126,7 @@ func GetAPIkey() string, *http.client {
 
 
 // Create client and send request
-client := &http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
+	client := &http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 	resp, err := sendPostRequest(client, apiUrl, body)
 	if err != nil {
 		log.Fatal(err)
@@ -133,7 +134,7 @@ client := &http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 	defer resp.Body.Close()
 
 // Read response body, get access token
-	accessToken := processResponse(resp.Body)
+	accessToken := processTokenResponse(resp.Body)
 
 	return accessToken, client
 }
