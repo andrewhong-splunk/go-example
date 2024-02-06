@@ -59,7 +59,7 @@ func main() {
 	token, client := GetAPIkey()
 	client.Transport = otelhttp.NewTransport(http.DefaultTransport)
 
-	url := "https://test.api.amadeus.com/v1/shopping/flight-destinations?origin=PAR&maxPrice=200"
+	url := "https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=LAX&destinationLocationCode=TPE&departureDate=2024-10-03&adults=1&max=2" 
 	
 	// Get response using client, url, and token
 	resp, err := createRequest(client, url, token)
