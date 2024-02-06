@@ -43,6 +43,9 @@ func processResponse(resp *http.Response) (string, error) {
 }
 
 func main() {
+	// Create a context
+//	ctx := context.Background()
+
 	// Otel instrumentation
 	sdk, err := distro.Run()
 	if err != nil {
