@@ -11,10 +11,12 @@ import (
 	"encoding/json"
 	"io"
 
+	"context"
 //	"github.com/signalfx/splunk-otel-go/distro"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 //	"go.opentelemetry.io/otel"
-//	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/attribute"
 
 
 	)
@@ -101,7 +103,7 @@ func processTokenResponse(response io.Reader) string {
 }
 
 // Use above functions to get API token. Returns access token as a key and client for further API calls
-func GetAPIkey() (string, *http.Client) {
+func GetAPIkey(ctx context.Context) (string, *http.Client) {
 
 /* Sample custom span instrumentation
 	// Create a named tracer
@@ -112,6 +114,12 @@ func GetAPIkey() (string, *http.Client) {
 	ctx, span = tracer.Start(ctx, "get API key")
 	defer span.End()
 */
+
+// Custom attribute attempt
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(attribute.Bool("myBool", true))
+	defer span.End()
+
 // Load env variables	
 	client_id, client_secret := clientVariables()
 
