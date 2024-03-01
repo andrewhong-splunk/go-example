@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -114,11 +115,16 @@ func GetAPIkey(ctx context.Context) (string, *http.Client) {
 	ctx, span = tracer.Start(ctx, "get API key")
 	defer span.End()
 */
-
+// Check context is nil
+	if ctx == nil {
+		log.Println("Warning: context is nil")
+	}
 // Custom attribute attempt
+	fmt.Println("hello 123 ctx:")
+	fmt.Println(ctx)
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(attribute.Bool("myBool", true))
-	defer span.End()
+	span.SetAttributes(attribute.String("hello", "value"))
 
 // Load env variables	
 	client_id, client_secret := clientVariables()

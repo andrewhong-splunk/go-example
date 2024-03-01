@@ -11,6 +11,9 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
 )
 
 /* Query Params
@@ -29,6 +32,18 @@ func createRequest(client *http.Client, apiUrl string, token string) (*http.Resp
 	if err != nil {
 		return nil, err
 	}
+
+	// Context attribute test
+	fmt.Println("main 34 req.Context():")
+	fmt.Println(req.Context())
+	span := trace.SpanFromContext(req.Context())
+	if span != nil {
+		fmt.Println("main 37 span")
+		fmt.Println(span)
+		span.SetAttributes(attribute.String("custom_attribute", "test_value"))
+	} else {
+	fmt.Println("span is nil")
+}
 
 
 // "https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=LAX&destinationLocationCode=TPE&departureDate=2024-10-03&adults=1&max=2"
@@ -64,6 +79,9 @@ func processResponse(resp *http.Response) (string, error) {
 
 }
 
+
+// If no Span is currently set in ctx an implementation of a Span that performs no operations is returned
+
 func main() {
 
 	// Otel instrumentation
@@ -78,10 +96,13 @@ func main() {
 		}
 	}()
 
-	// Create a context
+	// Create tracer and  context
 	ctx := context.Background()
+
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(attribute.String("stringAttr", "MyAttribute"))
+	fmt.Println("main 99 span:")
+	fmt.Println(span)
 
 	// Get token and client to make request. Set url
 	token, client := GetAPIkey(ctx)
@@ -101,4 +122,17 @@ func main() {
 
 	fmt.Println(responseData)
 
+	// Custom Metric Test
+
+	meter := otel.Meter("Example")
+	counter, err := meter.Int64Counter(
+		"amadeus.price",
+		metric.WithUnit("5"),
+		metric.WithDescription("Description placeholder"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	counter.Add(ctx, 1)
 }
